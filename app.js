@@ -4,7 +4,7 @@ const axios = require('axios');
 const logger = require('node-color-log');
 const path = require('path');
 const crypto = require('crypto');
-  const banner = `
+const banner = `
   $$$$$$\\                      $$\\              $$$$$$\\                                                              
   $$  __$$\\                     $$ |            $$  __$$\\                                                             
   $$ /  \\__| $$$$$$\\   $$$$$$\\  $$ |  $$\\       $$ /  \\__| $$$$$$\\   $$$$$$\\ $$\\    $$\\  $$$$$$\\   $$$$$$\\   $$$$$$$\\ 
@@ -16,13 +16,47 @@ const crypto = require('crypto');
                                                                                                                       
                                                                                                                       
                                                                                                                       
-  `;
+`;
+
+const versionUrl = 'https://path/to/your/version.json'; // Thay thế bằng URL thực tế của bạn
+const currentVersion = '0.0.0.2'; // Thay thế bằng phiên bản hiện tại của bạn
+
 const usernamesFilePath = path.join(__dirname, 'usernames.txt');
 const userJsonFilePath = path.join(__dirname, 'user.json');
 const BypassFilePath = path.join(__dirname, 'bypass.txt');
 
 fs.writeFileSync(BypassFilePath, '');
 fs.appendFileSync(BypassFilePath, banner);
+
+// Hàm kiểm tra phiên bản
+const checkVersion = async () => {
+  try {
+    const response = await axios.get(versionUrl);
+    const latestVersion = response.data.version;
+
+    if (latestVersion !== currentVersion) {
+      logger.warn('Detected New Update:');
+      logger.warn(`Your current version: ${currentVersion}`);
+      logger.warn(`New Version: ${latestVersion}`);
+      logger.warn('https://raw.githubusercontent.com/seekcat0/OceanTool/main/app.js');
+
+      // Fetch và dán mã mới vào tệp
+      const newCodeResponse = await axios.get('https://raw.githubusercontent.com/seekcat0/OceanTool/main/app.js');
+      const newCode = newCodeResponse.data;
+      fs.writeFileSync(__filename, newCode);
+      logger.success('Updated to the latest version. Please restart the application.');
+      process.exit(0);
+    } else {
+      logger.success('You are using the latest version.');
+    }
+  } catch (error) {
+    logger.error('Error checking version:', error.message);
+  }
+};
+
+// Gọi hàm kiểm tra phiên bản trước khi thực hiện các hàm khác
+checkVersion();
+
 // Hàm để đọc tên người dùng từ file
 const readUsernames = () => {
   return new Promise((resolve, reject) => {
@@ -69,7 +103,6 @@ async function getId(name) {
   }
 }
 
-
 const fetchBypassUser = async (usernames, options) => {
   const failedUsers = [];
 
@@ -95,13 +128,12 @@ const fetchBypassUser = async (usernames, options) => {
         const secondResponse = await axios.get(`http://45.90.13.151:6132/api/bypass?link=${link}&api_key=neyoshidzqua`);
 
         if (secondResponse.data.key) {
-//          const logMessage = `"${username}": [ Key: "${secondResponse.data.key}" | TimeTaken: "${secondResponse.data.time}" | TimeLeft: ${secondResponse.data.timeleft} ]`;
-const logMessage = `"${username}": [ Key: "${secondResponse.data.key}" | TimeTaken: "${secondResponse.data.duration}" ]`;
+          const logMessage = `"${username}": [ Key: "${secondResponse.data.key}" | TimeTaken: "${secondResponse.data.duration}" ]`;
           logger.success(logMessage);
           fs.appendFileSync(BypassFilePath, logMessage + '\n');
           retry = false;
         } else if (!secondResponse.data.key) {
-          logger.warn(`"${username}": [Deteced Value key its undefined Retry ...]`);
+          logger.warn(`"${username}": [Detected Value key is undefined. Retrying...]`);
         }
       } catch (error) {
         logger.error(`Processing username "${username}": ${error.message}`);
@@ -159,7 +191,8 @@ const createUserJson = async () => {
     logger.error('License Key not Support :P');
   }
 };
-const MyUI = async() => {
+
+const MyUI = async () => {
   logger.success('License Key Login !');
   console.clear(); 
   printSeekServersBanner();
@@ -192,7 +225,7 @@ Choosen sevice then enter when done...
       message: 'Select 1 service of keysystem for all account',
       choices: [
         { name: '1. Delta (Best)', value: 'delta' },
-        //{ name: '2. Hydrogen (Normal)', value: 'hydrogen' }
+        { name: '2. Hydrogen (Normal)', value: 'hydrogen' }
       ]
     }
   ]);
@@ -216,7 +249,8 @@ Choosen sevice then enter when done...
   } else {
     logger.error('Options errors :P');
   }
-}
+};
+
 // Hàm để kiểm tra xem user.json có tồn tại không
 const checkUserJson = () => {
   if (fs.existsSync(userJsonFilePath)) {
@@ -226,7 +260,7 @@ const checkUserJson = () => {
     logger.debug('Check license key ...');
     checkLicenseKey(userJson.licensekey).then(isValid => {
       if (isValid) {
-        MyUI()
+        MyUI();
       } else {
         logger.error('License Key not Support :P');
       }
@@ -235,6 +269,7 @@ const checkUserJson = () => {
     mainMenu();
   }
 };
+
 // Menu chính
 const mainMenu = async () => {
   printSeekServersBanner();
@@ -263,7 +298,7 @@ const mainMenu = async () => {
     const isValid = await checkLicenseKey(apiKeyAnswer.licensekey);
 
     if (isValid) {
-      MyUI()
+      MyUI();
     } else {
       logger.error('License Key not Support :P');
     }
