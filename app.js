@@ -18,7 +18,7 @@ const banner = `
                                                                                                                       
 `;
 
-const versionUrl = 'https://path/to/your/version.json'; // Thay thế bằng URL thực tế của bạn
+const versionUrl = 'https://raw.githubusercontent.com/seekcat0/OceanTool/main/version.json'; // Thay thế bằng URL thực tế của bạn
 const currentVersion = '0.0.0.2'; // Thay thế bằng phiên bản hiện tại của bạn
 
 const usernamesFilePath = path.join(__dirname, 'usernames.txt');
