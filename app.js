@@ -44,7 +44,7 @@ const checkVersion = async () => {
       const newCodeResponse = await axios.get('https://raw.githubusercontent.com/seekcat0/OceanTool/main/app.js');
       const newCode = newCodeResponse.data;
       fs.writeFileSync(__filename, newCode);
-      logger.success('Updated to the latest version. Please restart the application.');
+      logger.success('Updated to the latest version. Please restart the application or Enter again to Rerun File.');
       process.exit(0);
     } else {
       logger.success('You are using the latest version.');
@@ -222,7 +222,7 @@ Choosen sevice then enter when done...
       message: 'Select 1 service of keysystem for all account',
       choices: [
         { name: '1. Delta (Best)', value: 'delta' },
-        { name: '2. Hydrogen (Normal)', value: 'hydrogen' }
+        // { name: '2. Hydrogen (Normal)', value: 'hydrogen' }
       ]
     }
   ]);
