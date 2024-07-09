@@ -50,12 +50,9 @@ const checkVersion = async () => {
       logger.success('You are using the latest version.');
     }
   } catch (error) {
-    logger.error('Error checking version:', error.message);
+    logger.error('Error checking version');
   }
 };
-
-// Gọi hàm kiểm tra phiên bản trước khi thực hiện các hàm khác
-checkVersion();
 
 // Hàm để đọc tên người dùng từ file
 const readUsernames = () => {
@@ -306,6 +303,8 @@ const mainMenu = async () => {
     await createUserJson();
   }
 };
-
-// Kiểm tra file user.json khi chạy chương trình
-checkUserJson();
+async function WaitProject() {
+    await checkVersion();
+    await checkUserJson();
+}
+WaitProject()
